@@ -22,11 +22,16 @@ class KL_TYPE(Enum):
     K_QUARTER = auto()
 
 
+# 这段代码定义了一个名为 KLINE_DIR 的枚举类，用于表示K线（蜡烛图）方向的几种状态：
+# - UP: 向上
+# - DOWN: 向下
+# - COMBINE: 合并
+# - INCLUDED: 被包含
 class KLINE_DIR(Enum):
-    UP = auto()
-    DOWN = auto()
-    COMBINE = auto()
-    INCLUDED = auto()
+    UP = auto()        # 向上
+    DOWN = auto()      # 向下
+    COMBINE = auto()   # 合并
+    INCLUDED = auto()  # 被包含
 
 
 class FX_TYPE(Enum):

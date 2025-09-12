@@ -86,3 +86,5 @@ if __name__ == "__main__":
             plot_config=plot_config,
             plot_para=plot_para,
         )
+
+input("Press Enter to exit")

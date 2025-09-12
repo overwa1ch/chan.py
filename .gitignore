@@ -8,3 +8,12 @@ config.yaml
 OpenConfig.yaml
 gotify_push.py
 cos_config.yaml
+symbols_usa_2025.txt
+# 数据/产物
+.venv311/
+data/
+legacy_py/
+lists/
+ml_dataset/
+outputs_signals/
+qc_reports/

@@ -9,15 +9,15 @@ from .BiConfig import CBiConfig
 
 class CBiList:
     def __init__(self, bi_conf=CBiConfig()):
-        self.bi_list: List[CBi] = []
+        self.bi_list: List[CBi] = [] # 创建一个空列表存储“笔”，并用类型注解标明列表元素是 CBi
         self.last_end = None  # 最后一笔的尾部
         self.config = bi_conf
 
         self.free_klc_lst = []  # 仅仅用作第一笔未画出来之前的缓存，为了获得更精准的结果而已，不加这块逻辑其实对后续计算没太大影响
-
+        #在def try_create_first_bi(self, klc: CKLine) -> bool:中实现
     def __str__(self):
-        return "\n".join([str(bi) for bi in self.bi_list])
-
+        return "\n".join([str(bi) for bi in self.bi_list])#遍历 self.bi_list，把每个元素 bi 用 str(bi) 转为字符串，最终 join 把这些字符串拼成一个返回值（单个字符串）。
+        #join 确保输入的都是字符串(join 只接受字符串序列，否则会抛 TypeError）。) 
     def __iter__(self):
         yield from self.bi_list
 
