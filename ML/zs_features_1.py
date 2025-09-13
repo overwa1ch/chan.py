@@ -75,23 +75,23 @@ def load_kline_one(symbol, kline_dir: Path, timeframe: str):
 
     # ---- Normalize column names ----
     def norm_name(s):  # letters only, lowercase
-        return re.sub(r'[^a-z]', '', str(s).lower())
+        return re.sub(r"[^a-z]", "", str(s).lower())
 
     colmap = {c: norm_name(c) for c in df.columns}
 
     # Timestamp column detection (case-insensitive, flexible)
-    ts_cands = {'timestamp','time','datetime','date','dt','t'}
+    ts_cands = {"timestamp", "time", "datetime", "date", "dt", "t"}
     ts_col = None
     for orig, nm in colmap.items():
         if nm in ts_cands:
             ts_col = orig
             break
-    if ts_col is None and hasattr(df.index, 'dtype'):
+    if ts_col is None and hasattr(df.index, "dtype"):
         # try index if datetime-like
         try:
             if pd.api.types.is_datetime64_any_dtype(df.index):
-                df = df.reset_index().rename(columns={df.columns[0]: 'timestamp'})
-                ts_col = 'timestamp'
+                df = df.reset_index().rename(columns={df.columns[0]: "timestamp"})
+                ts_col = "timestamp"
         except Exception:
             pass
     if ts_col is None:
@@ -99,37 +99,40 @@ def load_kline_one(symbol, kline_dir: Path, timeframe: str):
         raise KeyError("timestamp")
 
     # Rename timestamp to 'timestamp'
-    if ts_col != 'timestamp':
-        df = df.rename(columns={ts_col: 'timestamp'})
+    if ts_col != "timestamp":
+        df = df.rename(columns={ts_col: "timestamp"})
 
-    # ---- Normalize OHLC columns ----
-    # Build reverse lookup of normalized name -> original
+    # ---- Normalize OHLCV columns ----
+    # Rebuild colmap to include any new columns from reset_index/rename
+    colmap = {c: norm_name(c) for c in df.columns}
     rev = {}
     for orig, nm in colmap.items():
         rev.setdefault(nm, orig)
 
     def pick(orig_names):
-        # from a list of normalized candidates, return first present original name
+        """Return first present original column name given normalized candidates."""
         for nm in orig_names:
             if nm in rev:
                 return rev[nm]
         return None
 
-    open_col  = pick(['open','o'])
-    high_col  = pick(['high','h'])
-    low_col   = pick(['low','l'])
-    close_col = pick(['close','adjclose','adjustedclose','closeadj','c'])
+    open_col  = pick(["open", "o"])
+    high_col  = pick(["high", "h"])
+    low_col   = pick(["low", "l"])
+    close_col = pick(["close", "adjclose", "adjustedclose", "closeadj", "c"])
+    vol_col   = pick(["volume", "vol", "v"])
 
     rename_dict = {}
-    if open_col and open_col != 'open':   rename_dict[open_col]  = 'open'
-    if high_col and high_col != 'high':   rename_dict[high_col]  = 'high'
-    if low_col  and low_col  != 'low':    rename_dict[low_col]   = 'low'
-    if close_col and close_col != 'close':rename_dict[close_col] = 'close'
+    if open_col  and open_col  != "open":  rename_dict[open_col]  = "open"
+    if high_col  and high_col  != "high":  rename_dict[high_col]  = "high"
+    if low_col   and low_col   != "low":   rename_dict[low_col]   = "low"
+    if close_col and close_col != "close": rename_dict[close_col] = "close"
+    if vol_col   and vol_col   != "volume":rename_dict[vol_col]   = "volume"
     if rename_dict:
         df = df.rename(columns=rename_dict)
 
-    # Basic presence check
-    for c in ['open','high','low','close']:
+    # Basic presence check for OHLCV
+    for c in ["open", "high", "low", "close", "volume"]:
         if c not in df.columns:
             raise KeyError(f"missing required column: {c}")
 
