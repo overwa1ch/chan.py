@@ -90,7 +90,8 @@ def load_kline_one(symbol, kline_dir: Path, timeframe: str):
         # try index if datetime-like
         try:
             if pd.api.types.is_datetime64_any_dtype(df.index):
-                df = df.reset_index().rename(columns={df.columns[0]: "timestamp"})
+                df = df.reset_index()
+                df = df.rename(columns={df.columns[0]: "timestamp"})
                 ts_col = "timestamp"
         except Exception:
             pass
